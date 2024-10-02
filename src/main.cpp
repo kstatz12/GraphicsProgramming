@@ -8,6 +8,7 @@
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height);
 void processInput(GLFWwindow *window);
+
 int main()
 {
     glfwInit();
@@ -34,15 +35,12 @@ int main()
     }
 
     // render loop
-    // -----------
     while (!glfwWindowShouldClose(window))
     {
         // input
-        // -----
         processInput(window);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
