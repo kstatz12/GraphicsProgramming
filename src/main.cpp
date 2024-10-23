@@ -108,9 +108,9 @@ int main() {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glBindVertexArray(0);
+  glBindVertexArray(0);
 
   // render loop
   while (!glfwWindowShouldClose(window)) {
@@ -132,8 +132,7 @@ int main() {
     glUniformMatrix4fv(transoformLocation, 1, GL_FALSE,
                        glm::value_ptr(transform));
 
-    glBindVertexArray(
-        VAO);
+    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(window);
