@@ -1,0 +1,20 @@
+# Compile options
+-std=c++17
+-Wall
+-Wextra
+-Werror
+-xc++
+
+# Include directories (add your project-specific directories here)
+-I./include
+-I/usr/local/include
+
+# Link directories (if applicable)
+-L/usr/local/lib
+
+# Define macros (if any)
+-DDEBUG
+
+# Set optimization levels or debugging (adjust as needed)
+-O2
+-g

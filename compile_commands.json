@@ -1,0 +1,26 @@
+[
+{
+  "directory": "/home/karl/src/GraphicsProgramming/build",
+  "command": "/usr/bin/cc  -I/home/karl/src/GraphicsProgramming/include  -o CMakeFiles/GLAD.dir/src/glad.c.o -c /home/karl/src/GraphicsProgramming/src/glad.c",
+  "file": "/home/karl/src/GraphicsProgramming/src/glad.c",
+  "output": "CMakeFiles/GLAD.dir/src/glad.c.o"
+},
+{
+  "directory": "/home/karl/src/GraphicsProgramming/build",
+  "command": "/usr/bin/c++  -I/home/karl/src/GraphicsProgramming/include -std=gnu++17 -o CMakeFiles/app.dir/src/main.cpp.o -c /home/karl/src/GraphicsProgramming/src/main.cpp",
+  "file": "/home/karl/src/GraphicsProgramming/src/main.cpp",
+  "output": "CMakeFiles/app.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/karl/src/GraphicsProgramming/build",
+  "command": "/usr/bin/c++  -I/home/karl/src/GraphicsProgramming/include -std=gnu++17 -o CMakeFiles/app.dir/src/shader.cpp.o -c /home/karl/src/GraphicsProgramming/src/shader.cpp",
+  "file": "/home/karl/src/GraphicsProgramming/src/shader.cpp",
+  "output": "CMakeFiles/app.dir/src/shader.cpp.o"
+},
+{
+  "directory": "/home/karl/src/GraphicsProgramming/build",
+  "command": "/usr/bin/cc  -I/home/karl/src/GraphicsProgramming/include  -o CMakeFiles/app.dir/src/glad.c.o -c /home/karl/src/GraphicsProgramming/src/glad.c",
+  "file": "/home/karl/src/GraphicsProgramming/src/glad.c",
+  "output": "CMakeFiles/app.dir/src/glad.c.o"
+}
+]

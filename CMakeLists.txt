@@ -15,6 +15,7 @@ find_package(X11 REQUIRED)
   # use pkg-config --libs $(pkg-config --print-requires --print-requires-private glfw3) in a terminal to confirm
 set(LIBS ${GLFW3_LIBRARY} X11 Xrandr Xinerama Xi Xxf86vm Xcursor GL dl pthread freetype ${ASSIMP_LIBRARY})
 set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+set (CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include_directories(include)
 set(HEADER_FILES include/glad/glad.h include/KHR/khrplatform.h)
@@ -22,12 +23,20 @@ set(HEADER_FILES include/glad/glad.h include/KHR/khrplatform.h)
 add_library(GLAD "src/glad.c")
 set(LIBS ${LIBS} GLAD)
 
-add_executable(app src/main.cpp src/glad.c ${HEADER_FILES})
+add_executable(app src/glad.c src/main.cpp ${HEADER_FILES})
 
 find_package(glfw3 3.3.10 REQUIRED)
+target_link_libraries(app PRIVATE glfw)
 
-target_link_libraries(app glfw)
-
+set(OpenGL_GL_Preference GLVND)
 find_package(OpenGL REQUIRED)
-target_link_libraries(app ${OPENGL_gl_LIBRARY})
+target_link_libraries(app PRIVATE ${OPENGL_gl_LIBRARY})
 
+find_package(glm CONFIG REQUIRED)
+target_link_libraries(app PRIVATE glm::glm)
+
+add_custom_command (
+  TARGET app POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  ${CMAKE_SOURCE_DIR}/shaders $<TARGET_FILE_DIR:app>/shaders
+)
