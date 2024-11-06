@@ -1,17 +1,23 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <random>
 
-#define SCR_WIDTH 600
+#define SCR_WIDTH 800
 #define SCR_HEIGHT 800
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void process_input(GLFWwindow *window);
+float random_bounded_point();
+float random_float(float min, float max);
+bool bounds_check(float x);
+
 
 float x_offset = 0.0f;
 float y_offset = 0.0f;
@@ -116,7 +122,11 @@ int main() {
 
   glBindVertexArray(0);
 
-  // float speed = 0.01f;
+  float speed = 0.01f;
+
+  glm::vec2 direction = glm::normalize(glm::vec2(random_bounded_point(), random_bounded_point()));
+  float posX = random_bounded_point();
+  float posY = random_bounded_point();
 
   // render loop
   while (!glfwWindowShouldClose(window)) {
@@ -126,14 +136,23 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // x_offset += speed;
-    // y_offset += speed;
-    // if (x_offset > 1.0f || x_offset < -1.0f || y_offset > 1.0f || y_offset <
-    // -1.0f) {
-    //     speed = -speed; // Reverse direction when reaching screen bounds
+    // posX += direction.x * speed;
+    // posY += direction.y * speed;
+
+    // if(bounds_check(posX))
+    // {
+    //   direction.x = -direction.x;
+    //   posX += direction.x * speed;
     // }
 
-    std::cout << x_offset << " " << y_offset << std::endl;
+    // if(bounds_check(posY))
+    // {
+    //   direction.y = -direction.y;
+    //   posY += direction.y * speed;
+    // }
+    //
+
+    std::cout << "(" << posX << "," << posY << ")" << std::endl;
 
     glUseProgram(shaderProgram);
 
@@ -157,17 +176,11 @@ int main() {
   glfwTerminate();
 }
 
-bool bounds_check(float x) {
-  if (x > 1.0f || x < -1.0f)
-    return false;
-  return true;
-}
-
 void process_input(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    if (bounds_check(y_offset)) {
+    if (!bounds_check(y_offset)) {
       y_offset += .01f;
     }
     else {
@@ -175,7 +188,7 @@ void process_input(GLFWwindow *window) {
     }
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    if (bounds_check(y_offset)) {
+    if (!bounds_check(y_offset)) {
       y_offset -= .01f;
     }
     else {
@@ -183,7 +196,7 @@ void process_input(GLFWwindow *window) {
     }
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    if (bounds_check(x_offset)) {
+    if (!bounds_check(x_offset)) {
       x_offset -= .01f;
     }
     else{
@@ -192,7 +205,7 @@ void process_input(GLFWwindow *window) {
   }
 
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    if (bounds_check(x_offset)) {
+    if (!bounds_check(x_offset)) {
       x_offset += .01f;
     }
     else
@@ -206,4 +219,22 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   // make sure the viewport matches the new window dimensions; note that width
   // and height will be significantly larger than specified on retina displays.
   glViewport(0, 0, width, height);
+}
+
+bool bounds_check(float x)
+{
+  return x < -1.0f || x > 1.0f;
+}
+
+float random_bounded_point()
+{
+  return random_float(-1.0f, 1.0f);
+}
+
+float random_float(float min, float max)
+{
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  std::uniform_real_distribution<> dis(min, max);
+  return dis(gen);
 }
