@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <functional>
 
 #include <iostream>
 #include <random>
@@ -18,6 +19,10 @@ float random_bounded_point();
 float random_float(float min, float max);
 bool bounds_check(float x);
 
+void on_up(GLFWwindow *window, std::function<void()> callback);
+void on_down(GLFWwindow *window, std::function<void()> callback);
+void on_left(GLFWwindow *window, std::function<void()> callback);
+void on_right(GLFWwindow *window, std::function<void()> callback);
 
 float x_offset = 0.0f;
 float y_offset = 0.0f;
@@ -124,7 +129,8 @@ int main() {
 
   float speed = 0.01f;
 
-  glm::vec2 direction = glm::normalize(glm::vec2(random_bounded_point(), random_bounded_point()));
+  glm::vec2 direction =
+      glm::normalize(glm::vec2(random_bounded_point(), random_bounded_point()));
   float posX = random_bounded_point();
   float posY = random_bounded_point();
 
@@ -158,8 +164,8 @@ int main() {
 
     glm::mat4 transform = glm::mat4(1.0);
     transform = glm::translate(transform, glm::vec3(x_offset, y_offset, 0.0f));
-    //transform = glm::rotate(transform, (float)glfwGetTime(),
-    //                        glm::vec3(0.0f, 0.0f, 1.0f));
+    // transform = glm::rotate(transform, (float)glfwGetTime(),
+    //                         glm::vec3(0.0f, 0.0f, 1.0f));
 
     unsigned int transoformLocation =
         glGetUniformLocation(shaderProgram, "transform");
@@ -179,40 +185,38 @@ int main() {
 void process_input(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+
+  on_up(window, []() {
     if (!bounds_check(y_offset)) {
       y_offset += .01f;
-    }
-    else {
+    } else {
       y_offset = .99f;
     }
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+  });
+
+  on_down(window, []() {
     if (!bounds_check(y_offset)) {
       y_offset -= .01f;
-    }
-    else {
+    } else {
       y_offset = -.99f;
     }
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+  });
+
+  on_left(window, []() {
     if (!bounds_check(x_offset)) {
       x_offset -= .01f;
-    }
-    else{
+    } else {
       x_offset = -0.99f;
     }
-  }
+  });
 
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+  on_right(window, []() {
     if (!bounds_check(x_offset)) {
       x_offset += .01f;
-    }
-    else
-    {
+    } else {
       x_offset = 0.99f;
     }
-  }
+  });
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -221,20 +225,37 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-bool bounds_check(float x)
-{
-  return x < -1.0f || x > 1.0f;
-}
+bool bounds_check(float x) { return x < -1.0f || x > 1.0f; }
 
-float random_bounded_point()
-{
-  return random_float(-1.0f, 1.0f);
-}
+float random_bounded_point() { return random_float(-1.0f, 1.0f); }
 
-float random_float(float min, float max)
-{
+float random_float(float min, float max) {
   static std::random_device rd;
   static std::mt19937 gen(rd());
   std::uniform_real_distribution<> dis(min, max);
   return dis(gen);
+}
+
+void on_up(GLFWwindow *window, std::function<void()> callback) {
+  if (glfwGetKey(window, GLFW_KEY_W) || glfwGetKey(window, GLFW_KEY_UP)) {
+    callback();
+  }
+}
+
+void on_down(GLFWwindow *window, std::function<void()> callback) {
+  if (glfwGetKey(window, GLFW_KEY_S) || glfwGetKey(window, GLFW_KEY_DOWN)) {
+    callback();
+  }
+}
+
+void on_left(GLFWwindow *window, std::function<void()> callback) {
+  if (glfwGetKey(window, GLFW_KEY_A) || glfwGetKey(window, GLFW_KEY_LEFT)) {
+    callback();
+  }
+}
+
+void on_right(GLFWwindow *window, std::function<void()> callback) {
+  if (glfwGetKey(window, GLFW_KEY_D) || glfwGetKey(window, GLFW_KEY_RIGHT)) {
+    callback();
+  }
 }
