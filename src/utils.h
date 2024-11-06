@@ -11,7 +11,7 @@ namespace Util {
 template <typename T, typename E> class Result {
 public:
   // Constructors for success and error
-  static Result<T, E> Ok(T value) { return Result<T, E>(value); }
+  static Result<T, E> Ok(T&& value) { return Result<T, E>(std::move(value)); }
 
   static Result<T, E> Err(E error) { return Result<T, E>(error); }
 
@@ -73,7 +73,7 @@ public:
 
 private:
   // Private constructor for internal use
-  Result(T value) : value_(value) {}
+  Result(T&& value) : value_(std::move(value)) {}
   Result(E error) : value_(error) {}
 
   // std::variant to hold either success or error

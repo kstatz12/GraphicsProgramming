@@ -1,7 +1,6 @@
 #ifndef ENGINE_H_
 #define ENGINE_H_
 
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -36,7 +35,9 @@ public:
 
 class EnginePlugin {
 public:
-  virtual void run();
+  virtual void run() {};
+
+  virtual ~EnginePlugin() {}
 };
 
 struct ShaderPluginConfig {
@@ -50,7 +51,7 @@ private:
 
 public:
   ShaderPlugin(ShaderPluginConfig config);
-  void run();
-}
+  void run() override;
+};
 
 #endif // ENGINE_H_

@@ -29,8 +29,7 @@ public:
 
     file.close();
 
-    return Util::Result<std::unique_ptr<char[]>, std::string>::Ok(
-        std::move(fileContents));
+    return Util::Result<std::unique_ptr<char[]>, std::string>::Ok(std::move(fileContents));
   }
 };
 } // namespace IO

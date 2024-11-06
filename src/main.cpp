@@ -11,7 +11,10 @@
 #define SCR_HEIGHT 800
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
+void process_input(GLFWwindow *window);
+
+float x_offset = 0.0f;
+float y_offset = 0.0f;
 
 const char *vertexShaderSource =
     "#version 330 core\n"
@@ -21,6 +24,7 @@ const char *vertexShaderSource =
     "{\n"
     "   gl_Position = transform * vec4(aPos, 1.0); "
     "}\0";
+
 const char *fragmentShaderSource =
     "#version 330 core\n"
     "out vec4 FragColor;\n"
@@ -112,20 +116,31 @@ int main() {
 
   glBindVertexArray(0);
 
+  // float speed = 0.01f;
+
   // render loop
   while (!glfwWindowShouldClose(window)) {
     // input
-    processInput(window);
+    process_input(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // x_offset += speed;
+    // y_offset += speed;
+    // if (x_offset > 1.0f || x_offset < -1.0f || y_offset > 1.0f || y_offset <
+    // -1.0f) {
+    //     speed = -speed; // Reverse direction when reaching screen bounds
+    // }
+
+    std::cout << x_offset << " " << y_offset << std::endl;
+
     glUseProgram(shaderProgram);
 
     glm::mat4 transform = glm::mat4(1.0);
-    transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-    transform = glm::rotate(transform, (float)glfwGetTime(),
-                            glm::vec3(0.0f, 0.0f, 1.0f));
+    transform = glm::translate(transform, glm::vec3(x_offset, y_offset, 0.0f));
+    //transform = glm::rotate(transform, (float)glfwGetTime(),
+    //                        glm::vec3(0.0f, 0.0f, 1.0f));
 
     unsigned int transoformLocation =
         glGetUniformLocation(shaderProgram, "transform");
@@ -142,9 +157,49 @@ int main() {
   glfwTerminate();
 }
 
-void processInput(GLFWwindow *window) {
+bool bounds_check(float x) {
+  if (x > 1.0f || x < -1.0f)
+    return false;
+  return true;
+}
+
+void process_input(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (bounds_check(y_offset)) {
+      y_offset += .01f;
+    }
+    else {
+      y_offset = .99f;
+    }
+  }
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if (bounds_check(y_offset)) {
+      y_offset -= .01f;
+    }
+    else {
+      y_offset = -.99f;
+    }
+  }
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (bounds_check(x_offset)) {
+      x_offset -= .01f;
+    }
+    else{
+      x_offset = -0.99f;
+    }
+  }
+
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (bounds_check(x_offset)) {
+      x_offset += .01f;
+    }
+    else
+    {
+      x_offset = 0.99f;
+    }
+  }
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {

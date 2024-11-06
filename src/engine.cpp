@@ -1,6 +1,6 @@
 #include "engine.h"
-#include "io.h"
 
+#include "io.h"
 #include "shader.h"
 #include <stdexcept>
 
@@ -37,7 +37,7 @@ void Engine::init() {
   // glad: load all OpenGL function pointers
   // ---------------------------------------
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-      throw std::runtime_error("Failed To Initialize GLAD");
+    throw std::runtime_error("Failed To Initialize GLAD");
   }
 
   unsigned int shaderProgram = glCreateProgram();
@@ -47,8 +47,22 @@ void Engine::init() {
   engineContext->ID = shaderProgram;
 }
 
+ShaderPlugin::ShaderPlugin(ShaderPluginConfig config) { this->config = config; }
 
-ShaderPlugin::ShaderPlugin(ShaderPluginConfig config)
-{
+void ShaderPlugin::run() {
+  // compile vertex shader
+  auto vertexShader =
+      IO::File::getContents(this->config.vertexPath)
+          .flatMap<unsigned long>([](std::unique_ptr<char[]> c) {
+            return Shaders::Compiler::compile(0, std::move(c));
+          })
+          .unwrap();
+  auto fragmentShader =
+      IO::File::getContents(this->config.fragmentPath)
+          .flatMap<unsigned long>([](std::unique_ptr<char[]> c) {
+            return Shaders::Compiler::compile(0, std::move(c));
+          })
+          .unwrap();
+
 
 }
