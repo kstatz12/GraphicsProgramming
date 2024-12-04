@@ -13,20 +13,20 @@ public:
   // Constructors for success and error
   static Result<T, E> Ok(T&& value) { return Result<T, E>(std::move(value)); }
 
-  static Result<T, E> Err(E error) { return Result<T, E>(error); }
+  static Result<T, E> Err(E&& error) { return Result<T, E>(std::move(error)); }
 
   // Check if the result is successful
-  bool isOk() const { return std::holds_alternative<T>(value_); }
+  bool isOk() const { return std::holds_alternative<T>(std::move(value_)); }
 
   // Check if the result is an error
-  bool isErr() const { return std::holds_alternative<E>(value_); }
+  bool isErr() const { return std::holds_alternative<E>(std::move(value_)); }
 
   // Get the successful value (if Ok) or throw
-  T unwrap() const {
+  T unwrap() {
     if (!isOk()) {
       throw std::runtime_error("Tried to unwrap an Err value!");
     }
-    return std::get<T>(value_);
+    return std::move(std::get<T>(value_));
   }
 
   // Get the error value (if Err) or throw
@@ -74,7 +74,7 @@ public:
 private:
   // Private constructor for internal use
   Result(T&& value) : value_(std::move(value)) {}
-  Result(E error) : value_(error) {}
+  Result(E&& error) : value_(std::move(error)) {}
 
   // std::variant to hold either success or error
   std::variant<T, E> value_;

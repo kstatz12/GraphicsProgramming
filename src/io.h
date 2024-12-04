@@ -16,20 +16,26 @@ public:
       return Util::Result<std::unique_ptr<char[]>, std::string>::Err(
           "Could Not Open File");
     }
+    try {
+      std::streampos size = file.tellg();
 
-    std::streampos size = file.tellg();
+      std::unique_ptr<char[]> fileContents =
+          std::make_unique<char[]>((ulong)size + 1);
 
-    std::unique_ptr<char[]> fileContents =
-        std::make_unique<char[]>((ulong)size + 1);
+      file.seekg(0, std::ios::beg);
+      file.read(fileContents.get(), size);
 
-    file.seekg(0, std::ios::beg);
-    file.read(fileContents.get(), size);
+      fileContents[size] = '\0';
 
-    fileContents[size] = '\0';
+      file.close();
 
-    file.close();
+      return Util::Result<std::unique_ptr<char[]>, std::string>::Ok(
+          std::move(fileContents));
 
-    return Util::Result<std::unique_ptr<char[]>, std::string>::Ok(std::move(fileContents));
+    } catch (...) {
+      return Util::Result<std::unique_ptr<char[]>, std::string>::Err(
+          "Cannot Read File Contents");
+    }
   }
 };
 } // namespace IO

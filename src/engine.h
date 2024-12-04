@@ -3,55 +3,76 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "drawable.h"
 
-#include <functional>
 #include <memory>
+#include <vector>
+#include <string>
+#include <functional>
 
-struct EngineConfig {
+struct Engine {
+private:
+  GLFWwindow *window;
+  std::vector<std::shared_ptr<Drawable>> drawables;
+
+  GLFWwindow *init() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, this->glfwMajorVersion);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, this->glfwMinorVersion);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, this->glfwProfile);
+
+    GLFWwindow *window = glfwCreateWindow(
+        this->width, this->height, this->windowName.c_str(), nullptr, nullptr);
+    if (!window) {
+      glfwTerminate(); // Clean up GLFW resources
+      throw std::runtime_error("Failed to create GLFW window");
+    }
+
+    // Make the OpenGL context current
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+      throw std::runtime_error("Failed to Load Glad");
+    }
+
+    // Set the framebuffer size callback
+    glfwSetFramebufferSizeCallback(
+        window, [](GLFWwindow *win, int w, int h) { glViewport(0, 0, w, h); });
+    return window;
+  }
+
+public:
   unsigned int height;
   unsigned int width;
   unsigned int glfwMajorVersion;
   unsigned int glfwMinorVersion;
   unsigned int glfwProfile;
-  char *windowName;
-};
+  std::string windowName;
 
-struct EngineContext {
-  unsigned int ID;
-  GLFWwindow *window;
-};
+  Engine() {
+    height = 600;
+    width = 800;
+    glfwMajorVersion = 3;
+    glfwMinorVersion = 3;
+    glfwProfile = GLFW_OPENGL_CORE_PROFILE;
+    windowName = "Hello Games";
 
-class Engine {
-private:
-  EngineConfig config;
-  EngineContext *engineContext;
+    this->window = init();
+  }
 
-public:
-  Engine(EngineConfig config);
-  ~Engine();
-  void init();
-  void draw(std::function<void(EngineContext)> func);
-};
+  void register_drawable(std::function<void(DrawableBuilder &)> fn) {
+    auto db = DrawableBuilder();
+    fn(db);
+    this->drawables.push_back(db.build());
+  }
 
-class EnginePlugin {
-public:
-  virtual void run() {};
+  void on_update(std::function<void(GLFWwindow *)> f) {
+    while (!glfwWindowShouldClose(this->window)) {
+      f(this->window);
+    }
+  }
 
-  virtual ~EnginePlugin() {}
-};
-
-struct ShaderPluginConfig {
-  char *vertexPath;
-  char *fragmentPath;
-};
-
-class ShaderPlugin : public EnginePlugin {
-private:
-  ShaderPluginConfig config;
-
-public:
-  ShaderPlugin(ShaderPluginConfig config);
-  void run() override;
+  ~Engine() { glfwTerminate(); }
 };
 
 #endif // ENGINE_H_

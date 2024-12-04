@@ -3,11 +3,11 @@ cmake_policy(VERSION 3.0)
 
 project(app)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -fdiagnostics-all-candidates -fsanitize=address")
 find_package(OpenGL REQUIRED)
 add_definitions(${OPENGL_DEFINITIONS})
 find_package(X11 REQUIRED)
@@ -18,7 +18,7 @@ set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
 set (CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include_directories(include)
-set(HEADER_FILES include/glad/glad.h include/KHR/khrplatform.h)
+set(HEADER_FILES include/glad/glad.h include/KHR/khrplatform.h src/renderer.h src/drawable.h src/utils.h src/io.h src/movement.h src/shader.h)
 
 add_library(GLAD "src/glad.c")
 set(LIBS ${LIBS} GLAD)
